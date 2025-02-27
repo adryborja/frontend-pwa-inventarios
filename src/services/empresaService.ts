@@ -5,8 +5,8 @@ export const empresaService = {
   findAll: async (): Promise<Empresa[]> => {
     return await fetchAPI('/empresas');
   },
-  findOne: async (id_empresa: number): Promise<Empresa> => {
-    return await fetchAPI(`/empresas/${id_empresa}`);
+  findOne: async (id: number): Promise<Empresa> => {
+    return await fetchAPI(`/empresas/${id}`);
   },
   create: async (data: Partial<Empresa>): Promise<Empresa> => {
     return await fetchAPI('/empresas', {
@@ -14,14 +14,14 @@ export const empresaService = {
       body: JSON.stringify(data),
     });
   },
-  update: async (id_empresa: number, data: Partial<Empresa>): Promise<Empresa> => {
-    return await fetchAPI(`/empresas/${id_empresa}`, {
+  update: async (id: number, data: Partial<Empresa>): Promise<Empresa> => {
+    return await fetchAPI(`/empresas/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   },
-  remove: async (id_empresa: number): Promise<void> => {
-    return await fetchAPI(`/empresas/${id_empresa}`, {
+  remove: async (id: number): Promise<void> => {
+    return await fetchAPI(`/empresas/${id}`, {
       method: 'DELETE',
     });
   },

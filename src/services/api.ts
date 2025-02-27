@@ -8,8 +8,14 @@ export const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
     },
     ...options,
   });
+
   if (!response.ok) {
-    throw new Error(`Error en la petición: ${response.statusText}`);
+    throw new Error(`Error en la petición: ${response.status} ${response.statusText}`);
   }
+
+  if (response.status === 204 || response.headers.get("content-length") === "0") {
+    return;
+  }
+
   return response.json();
 };

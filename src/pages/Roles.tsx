@@ -49,10 +49,18 @@ const Roles: React.FC = () => {
   const deleteRol = async (id: number) => {
     try {
       await rolService.remove(id);
+
+    
+      setRoles((prevRoles) => prevRoles.filter((rol) => rol.id !== id));
+
       toast.current?.show({ severity: "success", summary: "Éxito", detail: "Rol eliminado correctamente", life: 3000 });
-      loadRoles();
     } catch (error) {
       console.error("Error al eliminar rol:", error);
+      
+      setTimeout(() => {
+        loadRoles();
+      }, 500);
+
       toast.current?.show({ severity: "error", summary: "Error", detail: "No se pudo eliminar el rol", life: 3000 });
     }
   };

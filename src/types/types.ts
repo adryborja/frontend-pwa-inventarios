@@ -6,27 +6,27 @@ export interface Rol {
 }
 
 export interface Usuario {
-    id_usuario: number;
+    id: number;
     nombre_completo: string;
     email: string;
     telefono?: string;
     estado: string;
-    fecha_creacion: string;
-    ultima_conexion?: string;
-    password_hash: string;
-    id_empresa: number;
+    fechaCreacion: string;
+    ultimaConexion?: string;
+    passwordHash: string;
+    empresa?: Empresa | { id: number } | null;
     roles?: Rol[];
 }
 
 export interface Empresa {
-    id_empresa: number;
+    id: number;
     nombre: string;
     ruc: string;
     direccion: string;
     telefono: string;
     email_contacto: string;
     sector: string;
-    fecha_creacion: string;
+    fechaCreacion: string;
     estado: string;
 }
 

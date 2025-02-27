@@ -11,7 +11,7 @@ import AcercaDe from "./pages/AcercaDe";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Roles from "./pages/Roles";
-
+import Empresas from "./pages/Empresas";
 
 import "primereact/resources/themes/lara-light-indigo/theme.css"; 
 import "primereact/resources/primereact.min.css";
@@ -35,6 +35,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/roles" element={<Roles />} />
+          <Route path="/empresas" element={<Empresas />} />
         </Routes>
       </div>
     </Router>

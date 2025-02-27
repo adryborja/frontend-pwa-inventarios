@@ -12,6 +12,8 @@ export const Sidebar: React.FC = () => {
       icon: "pi pi-home",
       command: () => navigate("/")
     },
+
+    { label: "Empresas", icon: "pi pi-building", command: () => navigate("/empresas") },
     {
       label: "Gestión de Usuarios",
       icon: "pi pi-user",

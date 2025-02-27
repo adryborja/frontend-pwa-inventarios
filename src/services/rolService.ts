@@ -21,9 +21,14 @@ export const rolService = {
     });
   },
   remove: async (id: number): Promise<void> => {
-    return await fetchAPI(`/roles/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      await fetchAPI(`/roles/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      console.error("Error al eliminar el rol:", error);
+      throw new Error("No se pudo eliminar el rol. Puede estar asociado a otros registros.");
+    }
   },
 };
 
