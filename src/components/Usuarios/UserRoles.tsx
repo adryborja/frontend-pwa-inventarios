@@ -34,7 +34,7 @@ export const UserRoles: React.FC<UserRolesProps> = ({ usuario, onHide }) => {
   const assignRole = async () => {
     if (!selectedRole) return;
     try {
-      await usuarioService.asignarRol(usuario.id_usuario!, selectedRole.id!);
+      await usuarioService.asignarRol(usuario.id!, selectedRole.id!);
       toast.current?.show({ severity: "success", summary: "Éxito", detail: "Rol asignado correctamente", life: 3000 });
       onHide();
     } catch (error) {
