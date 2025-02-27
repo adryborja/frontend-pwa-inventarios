@@ -7,7 +7,6 @@ export const Usuarios: React.FC = () => {
     <div>
       <h1>Gestión de Usuarios</h1>
       <UserList />
-
     </div>
   );
 };

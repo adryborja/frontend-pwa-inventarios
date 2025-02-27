@@ -14,11 +14,11 @@ export const UserList: React.FC = () => {
   const [displayDialog, setDisplayDialog] = useState<boolean>(false);
   const toast = useRef<Toast>(null);
 
-  // ✅ Se usa useCallback para evitar re-render innecesario
+  
   const loadUsuarios = useCallback(async () => {
     try {
       const data = await usuarioService.findAll();
-      setUsuarios([...data]); // 🔥 Se actualiza la lista con una nueva referencia
+      setUsuarios([...data]); 
     } catch (error) {
       console.error("Error al cargar usuarios:", error);
       toast.current?.show({
@@ -145,14 +145,14 @@ export const UserList: React.FC = () => {
       </DataTable>
 
       <Dialog
-  header="Nuevo Usuario"
+  header={selectedUsuario ? "Editar Usuario" : "Nuevo Usuario"} 
   visible={displayDialog}
-  onHide={() => setDisplayDialog(false)} 
+  onHide={() => setDisplayDialog(false)}
 >
   <UserForm
     usuario={selectedUsuario}
-    onHide={() => setDisplayDialog(false)} 
-    onSaveSuccess={handleSaveSuccess} 
+    onHide={() => setDisplayDialog(false)}
+    onSaveSuccess={handleSaveSuccess}
   />
 </Dialog>
     </div>

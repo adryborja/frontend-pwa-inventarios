@@ -7,11 +7,12 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { MultiSelect } from "primereact/multiselect"; 
 
 interface UserFormProps {
   usuario?: Usuario | null;
   onHide: () => void;
-  onSaveSuccess: () => void;  // 🔥 Volvemos a agregar esto
+  onSaveSuccess: () => void;
 }
 
 export const UserForm: React.FC<UserFormProps> = ({ usuario, onHide, onSaveSuccess }) => {
@@ -31,11 +32,29 @@ export const UserForm: React.FC<UserFormProps> = ({ usuario, onHide, onSaveSucce
 
   useEffect(() => {
     if (usuario) {
-      setUsuarioData(usuario);
+        setUsuarioData(prevData => ({
+            ...prevData, // ✅ Mantener valores ya editados por el usuario
+            id: usuario.id,
+            nombre_completo: usuario.nombre_completo || "",
+            email: usuario.email || "",
+            telefono: usuario.telefono || "",
+            estado: usuario.estado || "Activo",
+            empresa: usuario.empresa ? { id: usuario.empresa.id } : null,
+            roles: usuario.roles 
+                ? usuario.roles.map((rol) => roles.find(r => r.id === rol.id) || { id: rol.id, nombre: `ID: ${rol.id}` }) 
+                : [],
+            passwordHash: usuario.passwordHash || "",
+        }));
     }
+}, [usuario, roles]); // ✅ Se ejecuta solo cuando cambia `usuario`
+
+// ✅ Cargar empresas y roles solo una vez al montar el componente
+useEffect(() => {
     loadEmpresas();
     loadRoles();
-  }, [usuario]);
+}, []); 
+
+
 
   const loadEmpresas = async () => {
     try {
@@ -57,48 +76,48 @@ export const UserForm: React.FC<UserFormProps> = ({ usuario, onHide, onSaveSucce
 
   const saveUsuario = async () => {
     try {
-      const usuarioPayload: Partial<Usuario> = {
-        ...usuarioData,
-        empresa: usuarioData.empresa ? { id: usuarioData.empresa.id } : null,
-        roles: usuarioData.roles
-          ? usuarioData.roles.map((rol) => ({
-              id: rol.id,
-              nombre: rol.nombre || "",
-              fechaCreacion: rol.fechaCreacion || new Date().toISOString(),
-            }))
-          : [],
-      };
+        const usuarioPayload: Partial<Usuario> = {
+            ...usuarioData,
+            empresa: usuarioData.empresa ? { id: usuarioData.empresa.id } : null,
+            roles: usuarioData.roles ? usuarioData.roles.map((rol) => ({ id: rol.id })) : [], 
+        };
 
-      if (usuario && usuario.id) {
-        await usuarioService.update(usuario.id, usuarioPayload);
-      } else {
-        await usuarioService.create(usuarioPayload);
-      }
+        console.log("Enviando datos al backend:", JSON.stringify(usuarioPayload, null, 2)); 
 
-      // ✅ Se llama a onSaveSuccess(), que ya ejecuta loadUsuarios() en UserList.tsx
-      if (onSaveSuccess) {
-        onSaveSuccess();
-      }
-
-      // ✅ Se cierra el modal
-      onHide();
+        if (usuario && usuario.id) {
+            await usuarioService.update(usuario.id, usuarioPayload);
+            toast.current?.show({
+                severity: "success",
+                summary: "Éxito",
+                detail: "Usuario actualizado correctamente",
+                life: 3000,
+            });
+        } else {
+            await usuarioService.create(usuarioPayload);
+            toast.current?.show({
+                severity: "success",
+                summary: "Éxito",
+                detail: "Usuario creado correctamente",
+                life: 3000,
+            });
+        }
+        onSaveSuccess(); 
+        onHide(); 
 
     } catch (error) {
-      console.error("Error al guardar usuario:", error);
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo guardar el usuario",
-        life: 3000,
-      });
+        console.error("Error al guardar usuario:", error);
+        toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "No se pudo guardar el usuario",
+            life: 3000,
+        });
     }
 };
 
   return (
     <div>
       <Toast ref={toast} />
-      <h2>{usuario ? "Editar Usuario" : "Nuevo Usuario"}</h2>
-
       <div className="p-field">
         <label>Nombre Completo:</label>
         <InputText
@@ -136,13 +155,20 @@ export const UserForm: React.FC<UserFormProps> = ({ usuario, onHide, onSaveSucce
 
       <div className="p-field">
         <label>Rol:</label>
-        <Dropdown
-          value={usuarioData.roles?.[0] || null}
-          options={roles}
-          optionLabel="nombre"
-          placeholder="Seleccione un rol"
-          onChange={(e) => setUsuarioData({ ...usuarioData, roles: [e.value] })}
-        />
+        <MultiSelect
+  value={usuarioData.roles || []} 
+  options={roles} 
+  optionLabel="nombre" 
+  placeholder="Seleccione uno o más roles"
+  onChange={(e) => {
+      setUsuarioData({ ...usuarioData, roles: e.value });
+  }}
+  display="chip"
+  showSelectAll={true}
+  selectAllLabel="Seleccionar Todos"
+  emptyFilterMessage="No hay roles disponibles"
+  emptyMessage="No hay roles disponibles"
+/>
       </div>
 
       <div className="p-field">

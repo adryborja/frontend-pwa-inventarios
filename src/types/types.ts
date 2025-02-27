@@ -15,7 +15,7 @@ export interface Usuario {
     ultimaConexion?: string;
     passwordHash: string;
     empresa?: Empresa | { id: number } | null;
-    roles?: Rol[];
+    roles?: Rol[] | { id: number }[];
 }
 
 export interface Empresa {
