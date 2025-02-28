@@ -22,24 +22,51 @@ export const InventoryUpdate: React.FC<InventoryUpdateProps> = ({ producto, onHi
 
   const updateStock = async (operation: "add" | "remove") => {
     if (!producto) return;
-
+  
     try {
       const newStock = operation === "add" ? stock + 1 : stock - 1;
+  
       if (newStock < 0) {
-        toast.current?.show({ severity: "warn", summary: "Stock inválido", detail: "No se puede tener stock negativo", life: 3000 });
+        toast.current?.show({
+          severity: "warn",
+          summary: "Stock inválido",
+          detail: "No se puede tener stock negativo",
+          life: 3000,
+        });
         return;
       }
-
-      await productoService.update(producto.id_producto, { stock_minimo: newStock }); // Ahora se usa `productoService`
+  
+      if (newStock > producto.stock_maximo) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Límite excedido",
+          detail: `El stock no puede ser mayor a ${producto.stock_maximo}.`,
+          life: 3000,
+        });
+        return;
+      }
+  
+      await productoService.update(producto.id, { stock_minimo: newStock });
       setStock(newStock);
-      toast.current?.show({ severity: "success", summary: "Éxito", detail: "Stock actualizado correctamente", life: 3000 });
-
+      toast.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Stock actualizado correctamente",
+        life: 3000,
+      });
+  
       onHide();
     } catch (error) {
       console.error("Error al actualizar stock:", error);
-      toast.current?.show({ severity: "error", summary: "Error", detail: "No se pudo actualizar el stock", life: 3000 });
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo actualizar el stock",
+        life: 3000,
+      });
     }
   };
+  
 
   return (
     <div>

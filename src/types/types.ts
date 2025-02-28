@@ -64,19 +64,19 @@ export interface Producto {
 }
 
 export interface Inventario {
-    id_inventario: number;
-    id_empresa: number;
+    id: number;
+    empresa?: { id: number; nombre: string } | null; 
     fecha_actualizacion: string;
 }
 
 export interface MovimientoInventario {
-    id_movimiento: number;
-    id_producto: number;
+    id: number;
+    producto?: { id: number; nombre: string } | null; 
     tipo_movimiento: string;
     cantidad: number;
     fecha_movimiento: string;
     motivo: string;
-    id_usuario: number;
+    usuario?: { id: number; nombre: string } | null; 
     costo_unitario: number;
     ubicacion: string;
 }
