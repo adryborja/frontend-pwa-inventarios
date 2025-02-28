@@ -58,18 +58,18 @@ El frontend está estructurado en **componentes reutilizables**, incluyendo:
 
 ### **Clonar el Repositorio**
 
-git clone https://github.com/adryborja/frontend-pwa-inventarios.git
-git clone https://github.com/adryborja/backend-pwa-inventarios.git
+- git clone https://github.com/adryborja/frontend-pwa-inventarios.git
+- git clone https://github.com/adryborja/backend-pwa-inventarios.git
 
 ### **Configurar backend**
 
 # Instalar dependencias
-npm i -g @nestjs/cli  
-npm install --save @nestjs/typeorm typeorm pg
-npm run start
+- npm i -g @nestjs/cli  
+- npm install --save @nestjs/typeorm typeorm pg
+- npm run start
 
 ### **Configurar frontend**
 
 # Instalar dependencias
-npm install primereact primeicons primeflex react-router-dom
-npm run dev
+- npm install primereact primeicons primeflex react-router-dom
+- npm run dev
