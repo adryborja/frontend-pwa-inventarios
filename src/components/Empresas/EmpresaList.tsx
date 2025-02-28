@@ -24,7 +24,12 @@ export const EmpresaList: React.FC = () => {
       setEmpresas(data);
     } catch (error) {
       console.error("Error al cargar empresas:", error);
-      toast.current?.show({ severity: "error", summary: "Error", detail: "No se pudieron cargar las empresas", life: 3000 });
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudieron cargar las empresas",
+        life: 3000,
+      });
     }
   };
 
@@ -32,18 +37,53 @@ export const EmpresaList: React.FC = () => {
     try {
       await empresaService.remove(id);
       setEmpresas((prevEmpresas) => prevEmpresas.filter((empresa) => empresa.id !== id));
-      toast.current?.show({ severity: "success", summary: "Éxito", detail: "Empresa eliminada correctamente", life: 3000 });
+      toast.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Empresa eliminada correctamente",
+        life: 3000,
+      });
     } catch (error) {
       console.error("Error al eliminar empresa:", error);
-      toast.current?.show({ severity: "error", summary: "Error", detail: "No se pudo eliminar la empresa", life: 3000 });
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo eliminar la empresa",
+        life: 3000,
+      });
     }
   };
+
+  const handleSaveSuccess = (isEdit: boolean = false) => { // ✅ Se asegura un valor por defecto
+    loadEmpresas();
+  
+    toast.current?.show({
+      severity: "success",
+      summary: "Éxito",
+      detail: isEdit ? "Empresa actualizada correctamente" : "Empresa creada correctamente",
+      life: 3000,
+    });
+  
+    setDisplayDialog(false);
+  };
+  
 
   return (
     <div>
       <Toast ref={toast} />
-      <h2>Lista de Empresas</h2>
-      
+
+      {/* ✅ Botón para agregar una empresa */}
+      <Button
+        label="Agregar Empresa"
+        icon="pi pi-plus"
+        className="p-button-success p-mb-3"
+        onClick={() => {
+          setSelectedEmpresa(null);
+          setDisplayDialog(true);
+        }}
+      />
+
+      {/* ✅ Tabla con lista de empresas */}
       <DataTable value={empresas} paginator rows={5} responsiveLayout="scroll">
         <Column field="id" header="ID" sortable />
         <Column field="nombre" header="Nombre" sortable />
@@ -75,8 +115,17 @@ export const EmpresaList: React.FC = () => {
         />
       </DataTable>
 
-      <Dialog header="Editar Empresa" visible={displayDialog} onHide={() => setDisplayDialog(false)}>
-        <EmpresaForm empresa={selectedEmpresa} onHide={() => { setDisplayDialog(false); loadEmpresas(); }} />
+      {/* ✅ Modal para agregar/editar empresa */}
+      <Dialog 
+        header={selectedEmpresa ? "Editar Empresa" : "Nueva Empresa"} 
+        visible={displayDialog} 
+        onHide={() => setDisplayDialog(false)}
+      >
+        <EmpresaForm 
+          empresa={selectedEmpresa} 
+          onHide={() => setDisplayDialog(false)} 
+          onSaveSuccess={handleSaveSuccess} 
+        />
       </Dialog>
     </div>
   );

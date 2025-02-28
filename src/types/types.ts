@@ -31,36 +31,36 @@ export interface Empresa {
 }
 
 export interface Proveedor {
-    id_proveedor: number;
+    id: number;
     nombre: string;
     contacto: string;
     telefono: string;
     email: string;
     direccion: string;
-    fecha_creacion: string;
+    fechaCreacion: string;
 }
 
 export interface Categoria {
-    id_categoria: number;
+    id: number;
     nombre: string;
     descripcion?: string;
-    fecha_creacion: string;
+    fechaCreacion: string;
 }
 
 export interface Producto {
-    id_producto: number;
+    id: number;
     codigo_barras: string;
     nombre: string;
     descripcion: string;
-    id_categoria: number;
+    categoria?: { id: number; nombre: string } | null; 
     precio_compra: number;
     precio_venta: number;
     stock_minimo: number;
     stock_maximo: number;
-    id_empresa: number;
-    id_proveedor: number;
-    fecha_creacion: string;
-    ultima_actualizacion: string;
+    empresa?: { id: number; nombre: string } | null; 
+    proveedor?: { id: number; nombre: string } | null; 
+    fechaCreacion: string;
+    ultimaActualizacion: string;
 }
 
 export interface Inventario {

@@ -10,6 +10,7 @@ export const Navbar: React.FC = () => {
     { label: "Usuarios", icon: "pi pi-user", command: () => navigate("/usuarios") },
     { label: "Roles", icon: "pi pi-users", command: () => navigate("/roles") },
     { label: "Empresas", icon: "pi pi-building", command: () => navigate("/empresas") },
+    { label: "Categorias", icon: "pi pi-box", command: () => navigate("/categorias") },
     { label: "Productos", icon: "pi pi-box", command: () => navigate("/productos") },
     { label: "Inventario", icon: "pi pi-list", command: () => navigate("/inventario") },
     { label: "Movimientos", icon: "pi pi-exchange", command: () => navigate("/movimientos") },

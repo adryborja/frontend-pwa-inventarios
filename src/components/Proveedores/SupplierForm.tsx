@@ -8,7 +8,7 @@ import { Toast } from "primereact/toast";
 interface SupplierFormProps {
   proveedor?: Proveedor | null;
   onHide: () => void;
-  onSave: () => void;
+  onSave: (isEdit: boolean) => void;
 }
 
 export const SupplierForm: React.FC<SupplierFormProps> = ({ proveedor, onHide, onSave }) => {
@@ -22,9 +22,17 @@ export const SupplierForm: React.FC<SupplierFormProps> = ({ proveedor, onHide, o
 
   const toast = useRef<Toast>(null);
 
+  // ✅ Cargar datos en caso de edición o dejar en blanco si es nuevo
   useEffect(() => {
     if (proveedor) {
-      setProveedorData(proveedor);
+      setProveedorData({
+        id: proveedor.id,
+        nombre: proveedor.nombre || "",
+        contacto: proveedor.contacto || "",
+        telefono: proveedor.telefono || "",
+        email: proveedor.email || "",
+        direccion: proveedor.direccion || "",
+      });
     } else {
       setProveedorData({
         nombre: "",
@@ -38,8 +46,11 @@ export const SupplierForm: React.FC<SupplierFormProps> = ({ proveedor, onHide, o
 
   const handleSubmit = async () => {
     try {
-      if (proveedor?.id_proveedor) {
-        await proveedorService.update(proveedor.id_proveedor, proveedorData);
+      let isEdit = false;
+
+      if (proveedor?.id) {
+        await proveedorService.update(proveedor.id, proveedorData);
+        isEdit = true;
       } else {
         await proveedorService.create(proveedorData);
       }
@@ -47,12 +58,13 @@ export const SupplierForm: React.FC<SupplierFormProps> = ({ proveedor, onHide, o
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Proveedor guardado correctamente",
+        detail: isEdit ? "Proveedor actualizado correctamente" : "Proveedor creado correctamente",
         life: 3000,
       });
 
-      onSave();
+      onSave(isEdit);
       onHide();
+
     } catch (error) {
       console.error("Error al guardar proveedor:", error);
       toast.current?.show({
@@ -67,35 +79,51 @@ export const SupplierForm: React.FC<SupplierFormProps> = ({ proveedor, onHide, o
   return (
     <div>
       <Toast ref={toast} />
-      <h2>{proveedor ? "Editar Proveedor" : "Nuevo Proveedor"}</h2>
 
       <div className="p-field">
         <label>Nombre:</label>
-        <InputText value={proveedorData.nombre || ""} onChange={(e) => setProveedorData({ ...proveedorData, nombre: e.target.value })} />
+        <InputText 
+          value={proveedorData.nombre} 
+          onChange={(e) => setProveedorData({ ...proveedorData, nombre: e.target.value })} 
+        />
       </div>
 
       <div className="p-field">
         <label>Contacto:</label>
-        <InputText value={proveedorData.contacto || ""} onChange={(e) => setProveedorData({ ...proveedorData, contacto: e.target.value })} />
+        <InputText 
+          value={proveedorData.contacto} 
+          onChange={(e) => setProveedorData({ ...proveedorData, contacto: e.target.value })} 
+        />
       </div>
 
       <div className="p-field">
         <label>Teléfono:</label>
-        <InputText value={proveedorData.telefono || ""} onChange={(e) => setProveedorData({ ...proveedorData, telefono: e.target.value })} />
+        <InputText 
+          value={proveedorData.telefono} 
+          onChange={(e) => setProveedorData({ ...proveedorData, telefono: e.target.value })} 
+        />
       </div>
 
       <div className="p-field">
         <label>Email:</label>
-        <InputText value={proveedorData.email || ""} onChange={(e) => setProveedorData({ ...proveedorData, email: e.target.value })} />
+        <InputText 
+          value={proveedorData.email} 
+          onChange={(e) => setProveedorData({ ...proveedorData, email: e.target.value })} 
+        />
       </div>
 
       <div className="p-field">
         <label>Dirección:</label>
-        <InputText value={proveedorData.direccion || ""} onChange={(e) => setProveedorData({ ...proveedorData, direccion: e.target.value })} />
+        <InputText 
+          value={proveedorData.direccion} 
+          onChange={(e) => setProveedorData({ ...proveedorData, direccion: e.target.value })} 
+        />
       </div>
 
-      <Button label="Guardar" icon="pi pi-save" className="p-button-success" onClick={handleSubmit} />
-      <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary p-ml-2" onClick={onHide} />
+      <div className="p-d-flex p-jc-end p-mt-3">
+        <Button label="Guardar" icon="pi pi-save" className="p-button-success" onClick={handleSubmit} />
+        <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary p-ml-2" onClick={onHide} />
+      </div>
     </div>
   );
 };

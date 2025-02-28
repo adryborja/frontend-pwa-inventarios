@@ -27,6 +27,7 @@ export const Sidebar: React.FC = () => {
       icon: "pi pi-box",
       items: [
         { label: "Productos", icon: "pi pi-box", command: () => navigate("/productos") },
+        { label: "Categorias", icon: "pi pi-list", command: () => navigate("/categorias") },
         { label: "Inventario", icon: "pi pi-list", command: () => navigate("/inventario") }
       ]
     },

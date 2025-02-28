@@ -9,9 +9,10 @@ import { Toast } from "primereact/toast";
 interface EmpresaFormProps {
   empresa?: Empresa | null;
   onHide: () => void;
+  onSaveSuccess: (isEdit?: boolean) => void;
 }
 
-export const EmpresaForm: React.FC<EmpresaFormProps> = ({ empresa, onHide }) => {
+export const EmpresaForm: React.FC<EmpresaFormProps> = ({ empresa, onHide, onSaveSuccess }) => {
   const [empresaData, setEmpresaData] = useState<Partial<Empresa>>({
     nombre: "",
     ruc: "",
@@ -27,37 +28,63 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({ empresa, onHide }) => 
   useEffect(() => {
     if (empresa) {
       setEmpresaData({
+        id: empresa.id,
+        nombre: empresa.nombre || "",
+        ruc: empresa.ruc || "",
+        direccion: empresa.direccion || "",
+        telefono: empresa.telefono || "",
+        email_contacto: empresa.email_contacto || "",
+        sector: empresa.sector || "",
+        estado: empresa.estado || "Activo",
+      });
+    } else {
+      setEmpresaData({
         nombre: "",
         ruc: "",
         direccion: "",
         telefono: "",
         email_contacto: "",
         sector: "",
-        estado: "",
+        estado: "Activo",
       });
     }
   }, [empresa]);
 
   const saveEmpresa = async () => {
     try {
+      let isEdit = false;
+  
       if (empresa && empresa.id) {
         await empresaService.update(empresa.id, empresaData);
-        toast.current?.show({ severity: "success", summary: "Éxito", detail: "Empresa actualizada correctamente", life: 3000 });
+        isEdit = true;
       } else {
         await empresaService.create(empresaData);
-        toast.current?.show({ severity: "success", summary: "Éxito", detail: "Empresa creada correctamente", life: 3000 });
       }
+  
+      toast.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: isEdit ? "Empresa actualizada correctamente" : "Empresa creada correctamente",
+        life: 3000,
+      });
+  
+      onSaveSuccess(isEdit); // ✅ Se pasa `isEdit` correctamente
       onHide();
+  
     } catch (error) {
       console.error("Error al guardar empresa:", error);
-      toast.current?.show({ severity: "error", summary: "Error", detail: "No se pudo guardar la empresa", life: 3000 });
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo guardar la empresa",
+        life: 3000,
+      });
     }
   };
 
   return (
     <div>
       <Toast ref={toast} />
-      <h2>{empresa ? "Editar Empresa" : "Nueva Empresa"}</h2>
 
       <div className="p-field">
         <label>Nombre:</label>
@@ -99,8 +126,11 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({ empresa, onHide }) => 
         />
       </div>
 
-      <Button label="Guardar" icon="pi pi-save" className="p-button-success" onClick={saveEmpresa} />
-      <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary p-ml-2" onClick={onHide} />
+      <div className="p-d-flex p-jc-end p-mt-3">
+        <Button label="Guardar" icon="pi pi-save" className="p-button-success" onClick={saveEmpresa} />
+        <Button label="Cancelar" icon="pi pi-times" className="p-button-secondary p-mr-2" onClick={onHide} />
+        
+      </div>
     </div>
   );
 };
