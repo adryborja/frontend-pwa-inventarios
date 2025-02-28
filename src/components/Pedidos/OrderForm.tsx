@@ -6,13 +6,15 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface OrderFormProps {
+  pedidoToEdit?: Pedido;
   onSaveSuccess?: () => void;
   onHide?: () => void;
 }
 
-export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) => {
+export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSuccess, onHide }) => {
   const [pedido, setPedido] = useState<Partial<Pedido>>({
     empresa: null,
     fecha_entrega: null,
@@ -20,10 +22,25 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
   });
   
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const toast = useRef<Toast>(null);
+
+  // Initialize form with data if editing
+  useEffect(() => {
+    if (pedidoToEdit) {
+      // Format date correctly
+      const editablePedido = {
+        ...pedidoToEdit,
+        fecha_entrega: pedidoToEdit.fecha_entrega ? new Date(pedidoToEdit.fecha_entrega) : null,
+      };
+      setPedido(editablePedido);
+    }
+  }, [pedidoToEdit]);
 
   useEffect(() => {
     const loadEmpresas = async () => {
+      setLoading(true);
       try {
         const data = await empresaService.findAll();
         setEmpresas(data);
@@ -35,6 +52,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
           detail: "No se pudieron cargar las empresas",
           life: 3000,
         });
+      } finally {
+        setLoading(false);
       }
     };
     loadEmpresas();
@@ -42,7 +61,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
 
   const handleSubmit = async () => {
     try {
-      // Validate required fields
+      setIsSubmitting(true);
+      
       if (!pedido.empresa) {
         toast.current?.show({
           severity: "warn",
@@ -50,6 +70,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
           detail: "Por favor seleccione una empresa",
           life: 3000,
         });
+        setIsSubmitting(false);
         return;
       }
 
@@ -60,6 +81,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
           detail: "Por favor seleccione una fecha de entrega",
           life: 3000,
         });
+        setIsSubmitting(false);
         return;
       }
 
@@ -70,35 +92,48 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
           detail: "Por favor seleccione un estado",
           life: 3000,
         });
+        setIsSubmitting(false);
         return;
       }
 
-      // Create the pedido
-      await pedidoService.create({
+      const pedidoData = {
         ...pedido,
         fecha_entrega: pedido.fecha_entrega ? new Date(pedido.fecha_entrega) : null,
-      });
+      };
 
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Pedido guardado correctamente",
-        life: 3000,
-      });
+      if (pedidoToEdit && pedidoToEdit.id) {
+        // Update existing pedido
+        await pedidoService.update(pedidoToEdit.id, pedidoData);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Pedido actualizado correctamente",
+          life: 3000,
+        });
+      } else {
+        // Create new pedido
+        await pedidoService.create(pedidoData);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Pedido guardado correctamente",
+          life: 3000,
+        });
 
-      // Reset form
-      setPedido({
-        empresa: null,
-        fecha_entrega: null,
-        estado: "Pendiente",
-      });
+        // Reset form only for new pedidos
+        setPedido({
+          empresa: null,
+          fecha_entrega: null,
+          estado: "Pendiente",
+        });
+      }
 
       // Call onSaveSuccess if provided
       if (onSaveSuccess) {
         onSaveSuccess();
       }
 
-      // Close the dialog if onHide is provided
+      // Call onHide if provided
       if (onHide) {
         onHide();
       }
@@ -110,8 +145,18 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
         detail: "No se pudo guardar el pedido",
         life: 3000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-content-center">
+        <ProgressSpinner />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -157,17 +202,19 @@ export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) =
 
       <div className="p-d-flex p-jc-end mt-4">
         <Button 
-          label="Guardar Pedido" 
-          icon="pi pi-save" 
+          label={isSubmitting ? "Guardando..." : pedidoToEdit ? "Actualizar Pedido" : "Guardar Pedido"}
+          icon={isSubmitting ? "pi pi-spin pi-spinner" : "pi pi-save"}
           className="p-button-success" 
-          onClick={handleSubmit} 
+          onClick={handleSubmit}
+          disabled={isSubmitting}
         />
         {onHide && (
           <Button 
             label="Cancelar" 
             icon="pi pi-times" 
             className="p-button-secondary ml-2" 
-            onClick={onHide} 
+            onClick={onHide}
+            disabled={isSubmitting}
           />
         )}
       </div>

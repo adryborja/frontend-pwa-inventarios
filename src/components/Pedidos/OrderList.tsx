@@ -5,9 +5,13 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { OrderForm } from "./OrderForm";
 
 export const OrderList = forwardRef((props, ref) => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
+  const [editDialogVisible, setEditDialogVisible] = useState(false);
   const toast = useRef<Toast>(null);
 
   const loadPedidos = async () => {
@@ -61,59 +65,89 @@ export const OrderList = forwardRef((props, ref) => {
     }
   };
 
+  const editRecord = (pedido: Pedido) => {
+    setSelectedPedido(pedido);
+    setEditDialogVisible(true);
+  };
+
+  const handleEditSuccess = () => {
+    loadPedidos();
+    setEditDialogVisible(false);
+    setSelectedPedido(null);
+    toast.current?.show({
+      severity: "success",
+      summary: "Éxito",
+      detail: "Pedido actualizado correctamente",
+      life: 3000,
+    });
+  };
+
   const actionBodyTemplate = (rowData: Pedido) => {
     return (
       <div className="flex gap-2">
-        <Button 
-          icon="pi pi-pencil" 
-          className="p-button-rounded p-button-warning p-button-sm" 
-          onClick={() => {
-            /* Edit functionality to be implemented */
-            toast.current?.show({
-              severity: "info",
-              summary: "Info",
-              detail: "Funcionalidad de edición pendiente",
-              life: 3000,
-            });
-          }} 
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-rounded p-button-warning p-button-sm"
+          onClick={() => editRecord(rowData)}
         />
-        <Button 
-          icon="pi pi-trash" 
-          className="p-button-rounded p-button-danger p-button-sm" 
-          onClick={() => deleteRecord(rowData.id)} 
+        <Button
+          icon="pi pi-trash"
+          className="p-button-rounded p-button-danger p-button-sm"
+          onClick={() => deleteRecord(rowData.id)}
         />
       </div>
     );
+  };
+
+  const hideEditDialog = () => {
+    setEditDialogVisible(false);
+    setSelectedPedido(null);
   };
 
   return (
     <div>
       <Toast ref={toast} />
       <h2>Lista de Pedidos</h2>
-      <DataTable 
-        value={pedidos} 
-        paginator 
-        rows={10} 
+      <DataTable
+        value={pedidos}
+        paginator
+        rows={10}
         responsiveLayout="scroll"
         emptyMessage="No hay pedidos disponibles"
       >
         <Column field="id" header="ID" sortable />
         <Column field="empresa.nombre" header="Empresa" sortable />
-        <Column 
-          field="fecha_solicitud" 
-          header="Fecha Solicitud" 
-          sortable 
+        <Column
+          field="fecha_solicitud"
+          header="Fecha Solicitud"
+          sortable
           body={(rowData) => formatDate(rowData.fecha_solicitud)}
         />
-        <Column 
-          field="fecha_entrega" 
-          header="Fecha Entrega" 
-          sortable 
+        <Column
+          field="fecha_entrega"
+          header="Fecha Entrega"
+          sortable
           body={(rowData) => formatDate(rowData.fecha_entrega)}
         />
         <Column field="estado" header="Estado" sortable />
         <Column body={actionBodyTemplate} header="Acciones" />
       </DataTable>
+
+      {/* Edit Dialog */}
+      <Dialog
+        header="Editar Pedido"
+        visible={editDialogVisible}
+        style={{ width: '50vw' }}
+        onHide={hideEditDialog}
+      >
+        {selectedPedido && (
+          <OrderForm 
+            pedidoToEdit={selectedPedido}
+            onSaveSuccess={handleEditSuccess}
+            onHide={hideEditDialog}
+          />
+        )}
+      </Dialog>
     </div>
   );
 });
