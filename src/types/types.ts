@@ -107,9 +107,9 @@ export interface Pedido {
 }
 
 export interface DetallePedido {
-    id_detalle_pedido: number;
-    id_pedido: number;
-    id_producto: number;
+    id: number;
+    pedido?:  { id: number; nombre: string } | null; 
+    producto?: { id: number; nombre: string } | null; 
     cantidad: number;
     precio_unitario: number;
 }

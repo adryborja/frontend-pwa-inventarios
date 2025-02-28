@@ -33,8 +33,8 @@ export const OrderList: React.FC = () => {
       <Toast ref={toast} />
       <h2>Lista de Pedidos</h2>
       <DataTable value={pedidos} paginator rows={10} responsiveLayout="scroll">
-        <Column field="id_pedido" header="ID Pedido" sortable />
-        <Column field="id_empresa" header="Empresa" sortable />
+        <Column field="id" header="ID" sortable />
+        <Column field="empresa" header="Empresa" sortable />
         <Column field="fecha_solicitud" header="Fecha Solicitud" sortable />
         <Column field="fecha_entrega" header="Fecha Entrega" sortable />
         <Column field="estado" header="Estado" sortable />

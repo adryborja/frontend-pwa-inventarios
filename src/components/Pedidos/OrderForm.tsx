@@ -9,7 +9,7 @@ import { Toast } from "primereact/toast";
 
 export const OrderForm: React.FC = () => {
   const [pedido, setPedido] = useState<Partial<Pedido>>({
-    id_empresa: undefined,
+    id: undefined,
     fecha_entrega: null,
     estado: "",
   });
@@ -46,7 +46,7 @@ export const OrderForm: React.FC = () => {
         detail: "Pedido guardado correctamente",
         life: 3000,
       });
-      setPedido({ id_empresa: undefined, fecha_entrega: null, estado: "" });
+      setPedido({ id: undefined, fecha_entrega: null, estado: "" });
     } catch (error) {
       console.error("Error al guardar pedido:", error);
       toast.current?.show({
@@ -65,10 +65,10 @@ export const OrderForm: React.FC = () => {
       <div className="p-field">
         <label>Empresa:</label>
         <Dropdown
-          value={pedido.id_empresa}
+          value={pedido.id}
           options={empresas}
           optionLabel="nombre"
-          onChange={(e) => setPedido({ ...pedido, id_empresa: e.value })}
+          onChange={(e) => setPedido({ ...pedido, id: e.value })}
           placeholder="Seleccione una empresa"
         />
       </div>
