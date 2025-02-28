@@ -17,16 +17,6 @@ Este proyecto es un **Sistema de Gestión de Inventarios** desarrollado como par
 - **NestJS** - Framework de Node.js para el backend.
 - **PostgreSQL** - Base de datos relacional.
 - **TypeORM** - ORM para gestionar la base de datos.
-- **JWT** - Autenticación segura con JSON Web Tokens.
-- **Swagger** - Documentación de API.
-
-### **Frontend (Next.js)**
-- **Next.js** - Framework para React con SSR.
-- **PrimeReact** - Componentes UI avanzados.
-- **Tailwind CSS** - Framework de estilos moderno.
-- **Zustand** - Manejo de estado global ligero.
-- **React Query** - Manejo eficiente de datos.
-- **Axios** - Cliente HTTP para peticiones API.
 
 ## **Estructura del Proyecto**
 ### **Backend**
