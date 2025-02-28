@@ -8,7 +8,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { OrderForm } from "./OrderForm";
 
-export const OrderList = forwardRef((props, ref) => {
+export const OrderList = forwardRef((_props, ref) => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [selectedPedido, setSelectedPedido] = useState<Pedido | null>(null);
   const [editDialogVisible, setEditDialogVisible] = useState(false);
@@ -29,7 +29,7 @@ export const OrderList = forwardRef((props, ref) => {
     }
   };
 
-  // Expose loadPedidos method to parent component
+ 
   useImperativeHandle(ref, () => ({
     loadPedidos
   }));
@@ -133,7 +133,7 @@ export const OrderList = forwardRef((props, ref) => {
         <Column body={actionBodyTemplate} header="Acciones" />
       </DataTable>
 
-      {/* Edit Dialog */}
+      { }
       <Dialog
         header="Editar Pedido"
         visible={editDialogVisible}
