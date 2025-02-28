@@ -8,13 +8,13 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 
-interface OrderFormProps {
+interface OrderForm {
   pedidoToEdit?: Pedido;
   onSaveSuccess?: () => void;
   onHide?: () => void;
 }
 
-export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSuccess, onHide }) => {
+export const OrderForm: React.FC<OrderForm> = ({ pedidoToEdit, onSaveSuccess, onHide }) => {
   const [pedido, setPedido] = useState<Partial<Pedido>>({
     empresa: null,
     fecha_entrega: null,
@@ -26,7 +26,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSucces
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const toast = useRef<Toast>(null);
 
-
+  
   useEffect(() => {
     if (pedidoToEdit) {
       
@@ -102,7 +102,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSucces
       };
 
       if (pedidoToEdit && pedidoToEdit.id) {
-      
+
         await pedidoService.update(pedidoToEdit.id, pedidoData);
         toast.current?.show({
           severity: "success",
@@ -111,7 +111,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSucces
           life: 3000,
         });
       } else {
-      
+    
         await pedidoService.create(pedidoData);
         toast.current?.show({
           severity: "success",
@@ -120,7 +120,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSucces
           life: 3000,
         });
 
-        
+   
         setPedido({
           empresa: null,
           fecha_entrega: null,
@@ -133,7 +133,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ pedidoToEdit, onSaveSucces
         onSaveSuccess();
       }
 
-     
+      
       if (onHide) {
         onHide();
       }
