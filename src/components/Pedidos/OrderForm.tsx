@@ -7,12 +7,18 @@ import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 
-export const OrderForm: React.FC = () => {
+interface OrderFormProps {
+  onSaveSuccess?: () => void;
+  onHide?: () => void;
+}
+
+export const OrderForm: React.FC<OrderFormProps> = ({ onSaveSuccess, onHide }) => {
   const [pedido, setPedido] = useState<Partial<Pedido>>({
-    id: undefined,
+    empresa: null,
     fecha_entrega: null,
-    estado: "",
+    estado: "Pendiente",
   });
+  
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const toast = useRef<Toast>(null);
 
@@ -36,17 +42,66 @@ export const OrderForm: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
+      // Validate required fields
+      if (!pedido.empresa) {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Advertencia",
+          detail: "Por favor seleccione una empresa",
+          life: 3000,
+        });
+        return;
+      }
+
+      if (!pedido.fecha_entrega) {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Advertencia",
+          detail: "Por favor seleccione una fecha de entrega",
+          life: 3000,
+        });
+        return;
+      }
+
+      if (!pedido.estado) {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Advertencia",
+          detail: "Por favor seleccione un estado",
+          life: 3000,
+        });
+        return;
+      }
+
+      // Create the pedido
       await pedidoService.create({
         ...pedido,
         fecha_entrega: pedido.fecha_entrega ? new Date(pedido.fecha_entrega) : null,
       });
+
       toast.current?.show({
         severity: "success",
         summary: "Éxito",
         detail: "Pedido guardado correctamente",
         life: 3000,
       });
-      setPedido({ id: undefined, fecha_entrega: null, estado: "" });
+
+      // Reset form
+      setPedido({
+        empresa: null,
+        fecha_entrega: null,
+        estado: "Pendiente",
+      });
+
+      // Call onSaveSuccess if provided
+      if (onSaveSuccess) {
+        onSaveSuccess();
+      }
+
+      // Close the dialog if onHide is provided
+      if (onHide) {
+        onHide();
+      }
     } catch (error) {
       console.error("Error al guardar pedido:", error);
       toast.current?.show({
@@ -61,28 +116,32 @@ export const OrderForm: React.FC = () => {
   return (
     <div>
       <Toast ref={toast} />
-      <h2>Nuevo Pedido</h2>
-      <div className="p-field">
-        <label>Empresa:</label>
+
+      <div className="p-field mb-3">
+        <label className="block mb-1">Empresa:</label>
         <Dropdown
-          value={pedido.id}
+          value={pedido.empresa}
           options={empresas}
           optionLabel="nombre"
-          onChange={(e) => setPedido({ ...pedido, id: e.value })}
+          onChange={(e) => setPedido({ ...pedido, empresa: e.value })}
           placeholder="Seleccione una empresa"
+          className="w-full"
         />
       </div>
-      <div className="p-field">
-        <label>Fecha de Entrega:</label>
+
+      <div className="p-field mb-3">
+        <label className="block mb-1">Fecha de Entrega:</label>
         <Calendar
           value={pedido.fecha_entrega || null}
           onChange={(e) => setPedido({ ...pedido, fecha_entrega: e.value as Date })}
           dateFormat="dd/mm/yy"
           showIcon
+          className="w-full"
         />
       </div>
-      <div className="p-field">
-        <label>Estado:</label>
+
+      <div className="p-field mb-3">
+        <label className="block mb-1">Estado:</label>
         <Dropdown
           value={pedido.estado}
           options={[
@@ -92,9 +151,26 @@ export const OrderForm: React.FC = () => {
           ]}
           onChange={(e) => setPedido({ ...pedido, estado: e.value })}
           placeholder="Seleccione el estado"
+          className="w-full"
         />
       </div>
-      <Button label="Guardar Pedido" icon="pi pi-save" onClick={handleSubmit} />
+
+      <div className="p-d-flex p-jc-end mt-4">
+        <Button 
+          label="Guardar Pedido" 
+          icon="pi pi-save" 
+          className="p-button-success" 
+          onClick={handleSubmit} 
+        />
+        {onHide && (
+          <Button 
+            label="Cancelar" 
+            icon="pi pi-times" 
+            className="p-button-secondary ml-2" 
+            onClick={onHide} 
+          />
+        )}
+      </div>
     </div>
   );
 };
