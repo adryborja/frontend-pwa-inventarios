@@ -15,10 +15,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
   useEffect(() => {
-    // Intenta cargar usuario desde localStorage al inicio
     const storedUser = localStorage.getItem("usuario");
     if (storedUser) {
-      setUsuario(JSON.parse(storedUser));
+      try {
+        setUsuario(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error al parsear usuario desde localStorage:", error);
+        setUsuario(null);
+      }
     }
   }, []);
 
@@ -26,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const user = await authService.login(email, password);
       setUsuario(user);
-      localStorage.setItem("usuario", JSON.stringify(user)); // Guardamos en localStorage
+      localStorage.setItem("usuario", JSON.stringify(user));
       return true;
     } catch (error) {
       console.error("Error en login:", error);
@@ -37,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUsuario(null);
     localStorage.removeItem("usuario");
+    window.location.href = "/"; // ✅ Redirigir al inicio después de cerrar sesión
   };
 
   return (
@@ -46,7 +51,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Hook personalizado para usar la autenticación en cualquier parte del proyecto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

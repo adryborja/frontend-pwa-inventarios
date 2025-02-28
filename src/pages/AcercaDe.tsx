@@ -9,14 +9,14 @@ export const AcercaDe: React.FC = () => {
         movimientos de stock, pedidos y proveedores de manera eficiente.
       </p>
       <p className="mt-2">
-        Tecnologías utilizadas:
+        Tecnologías utilizadas:</p>
         <ul className="list-disc ml-5">
           <li>React.js con TypeScript</li>
           <li>PrimeReact para los componentes UI</li>
           <li>React Router para la navegación</li>
           <li>Servicios API para la gestión de datos</li>
         </ul>
-      </p>
+      
       <p className="mt-2">
         Desarrollado como parte del **Proyecto Integrador de Programación Web**.
       </p>

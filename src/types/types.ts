@@ -99,8 +99,8 @@ export interface AlertaStock {
 }
 
 export interface Pedido {
-    id_pedido: number;
-    id_empresa: number;
+    id: number;
+    empresa?: { id: number; nombre: string } | null;
     fecha_solicitud: string;
     fecha_entrega?: Date | null;
     estado: string;
